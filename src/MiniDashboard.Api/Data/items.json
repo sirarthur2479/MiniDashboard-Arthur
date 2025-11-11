@@ -16,11 +16,5 @@
     "Name": "Monitor",
     "Description": "27-inch 4K Display",
     "Price": 699.00
-  },
-  {
-    "Id": 6,
-    "Name": "Test Item",
-    "Description": "Test Description",
-    "Price": 999
   }
 ]
