@@ -20,8 +20,13 @@ namespace MiniDashboard.Api.Services {
 
         public IEnumerable<Item> GetAll(string? search = null) {
             var items = _repository.GetAll();
-            if (!string.IsNullOrEmpty(search))
-                items = items.Where(i => i.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrEmpty(search)) {
+                search = search.ToLowerInvariant();
+                items = items.Where(i =>
+                    i.Name.ToLowerInvariant().Contains(search) ||
+                    i.Description.ToLowerInvariant().Contains(search));
+            }
+            // return all items if no search term is provided
             return items;
         }
 

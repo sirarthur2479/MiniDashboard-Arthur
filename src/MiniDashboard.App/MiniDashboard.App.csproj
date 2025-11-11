@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
+    <PackageReference Include="FlaUI.Core" Version="5.0.0" />
+    <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.10" />
   </ItemGroup>
