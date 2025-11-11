@@ -50,16 +50,21 @@ public class MiniDashboardUITests
             ?? throw new InvalidOperationException("Main window not found"); ;
 
         var nameBox = window.FindFirstDescendant(cf => cf.ByAutomationId("NewItemName"))?.AsTextBox()
-            ?? throw new InvalidOperationException("Name textbox not found"); ;
+            ?? throw new InvalidOperationException("Name textbox not found");
         var descBox = window.FindFirstDescendant(cf => cf.ByAutomationId("NewItemDescription"))?.AsTextBox()
-            ?? throw new InvalidOperationException("Description textbox not found"); ;
+            ?? throw new InvalidOperationException("Description textbox not found");
         var priceBox = window.FindFirstDescendant(cf => cf.ByAutomationId("NewItemPrice"))?.AsTextBox()
-            ?? throw new InvalidOperationException("Price textbox not found"); ;
+            ?? throw new InvalidOperationException("Price textbox not found");
         var addButton = window.FindFirstDescendant(cf => cf.ByAutomationId("AddButton"))?.AsButton()
-            ?? throw new InvalidOperationException("Add button not found"); ;
+            ?? throw new InvalidOperationException("Add button not found");
+        var deleteButton = window.FindFirstDescendant(cf => cf.ByAutomationId("DeleteButton"))?.AsButton()
+            ?? throw new InvalidOperationException("Delete button not found");
+        var dataGrid = window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.DataGrid)).AsDataGridView();
 
         Assert.IsNotNull(nameBox);
         Assert.IsNotNull(addButton);
+        Assert.IsNotNull(deleteButton);
+        Assert.IsNotNull(dataGrid);
 
         // Fill in item data
         nameBox.Enter("Test Item");
@@ -69,26 +74,37 @@ public class MiniDashboardUITests
         // Click Add
         addButton.Invoke();
 
-        // Check that DataGrid contains new item
-        var dataGrid = window.FindFirstDescendant(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.DataGrid)).AsDataGridView();
+        // Wait for row to appear (retry up to 2s)
+        var added = Retry.WhileFalse(() =>
+            dataGrid.Rows.Any(r => {
+                var cell = r.Cells[1]; // Name column
+                var text = cell?.FindFirstChild()?.AsLabel()?.Text;
+                return text == "Test Item";
+            }),
+            TimeSpan.FromSeconds(2)
+        );
 
-        // Wait up to 2 seconds for row to appear
-        var retry = Retry.WhileFalse(() => {
-            if (dataGrid == null || dataGrid.Rows == null)
-                return false;
+        Assert.IsTrue(added.Result, "Item was not added to DataGrid");
+        // --- Delete Item ---
+        var rowToDelete = dataGrid.Rows.First(r => {
+            var cell = r.Cells[1];
+            var text = cell?.FindFirstChild()?.AsLabel()?.Text;
+            return text == "Test Item";
+        });
 
-            return dataGrid.Rows.Any(row => {
-                if (row?.Cells == null || row.Cells.Length <= 1)
-                    return false;
+        rowToDelete.Click();
+        deleteButton.Invoke();
 
-                var cell = row.Cells[1];
-                var textElement = cell?.FindFirstChild()?.AsLabel();
-                var text = textElement?.Text;
+        // Wait for row to disappear
+        var deleted = Retry.WhileTrue(() =>
+            dataGrid.Rows.Any(r => {
+                var cell = r.Cells[1];
+                var text = cell?.FindFirstChild()?.AsLabel()?.Text;
+                return text == "Test Item";
+            }),
+            TimeSpan.FromSeconds(2)
+        );
 
-                return text != null && text == "Test Item";
-            });
-        }, TimeSpan.FromSeconds(2));
-
-        Assert.IsTrue(retry.Result, "The 'Test Item' row did not appear in the DataGrid within 2 seconds.");
+        Assert.IsTrue(deleted.Result, "Item was not deleted from DataGrid");
     }
 }
