@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MiniDashboard.Api\MiniDashboard.Api.csproj" />
-    <ProjectReference Include="..\..\src\MiniDashboard.Common\MiniDashboard.Common.csproj" />
   </ItemGroup>
 
 </Project>
