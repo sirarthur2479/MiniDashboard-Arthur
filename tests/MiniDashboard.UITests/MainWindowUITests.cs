@@ -9,7 +9,8 @@ using System.Linq;
 using System.IO;
 
 [TestClass]
-public class MiniDashboardUITests {
+public class MiniDashboardUITests
+{
     private Application? _app;
     private UIA3Automation? _automation;
 
@@ -20,8 +21,7 @@ public class MiniDashboardUITests {
         var currentDir = Directory.GetCurrentDirectory(); // test bin folder
         var appPath = Path.Combine(currentDir, "..", "..", "..", "..", "..", "src", "MiniDashboard.App", "bin", "Debug", "net9.0-windows", "MiniDashboard.App.exe");
 
-        if (!File.Exists(appPath))
-        {
+        if (!File.Exists(appPath)) {
             throw new FileNotFoundException("Cannot find MiniDashboard.App.exe. Build the WPF app first.", appPath);
         }
 
@@ -29,10 +29,9 @@ public class MiniDashboardUITests {
         _automation = new UIA3Automation();
     }
 
-    public TestContext TestContext { get; set; }
-
     [TestCleanup]
-    public void Cleanup() {
+    public void Cleanup()
+    {
         // Only close if no test failed
         if (this.TestContext.CurrentTestOutcome == UnitTestOutcome.Passed) {
             _automation?.Dispose();
@@ -42,6 +41,7 @@ public class MiniDashboardUITests {
         }
     }
 
+    public TestContext TestContext { get; set; }
     [TestMethod]
     public void AddItem_ShowsInDataGrid() {
         if (_app == null || _automation == null)
@@ -90,6 +90,5 @@ public class MiniDashboardUITests {
         }, TimeSpan.FromSeconds(2));
 
         Assert.IsTrue(retry.Result, "The 'Test Item' row did not appear in the DataGrid within 2 seconds.");
-
     }
 }
