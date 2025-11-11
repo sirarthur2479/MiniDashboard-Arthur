@@ -57,6 +57,11 @@ MiniDashboard-[YourName]/
 
 * .NET 9 SDK or later
 * Visual Studio 2022 or later (with WPF and ASP.NET workload)
+* The API runs on HTTPS by default (`https://localhost:7264`). On a new machine, you may need to trust the .NET development certificate:
+
+```powershell
+dotnet dev-certs https --trust
+```
 
 ### Run the API
 
